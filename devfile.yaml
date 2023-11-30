@@ -109,15 +109,28 @@ commands:
       commandLine: "oc new-app -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=password -e POSTGRESQL_DATABASE=food_db postgresql:10-el7 -n demo"
       group:
         kind: test
-  - id: commit-last-changes
+  - id: git-add-changes
     exec:
-      label: "Commit and Push Last Changes"
+      label: "Add changed files to the index"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/quarkus-api-example
+      commandLine: git add .
+  - id: git-commit-changes
+    exec:
+      label: "Commit Last Changes"
       component: tools
       workingDir: ${PROJECTS_ROOT}/quarkus-api-example
       commandLine: |
-        git add . &&
-        git commit -s -m "Updated: `date +'%Y-%m-%d %H:%M:%S'`" &&
-        git push
+        git commit -s -m "Updated: `date +'%Y-%m-%d %H:%M:%S'`"
+  - id: git-push-changes
+    exec:
+      label: "Push Last Changes"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/quarkus-api-example
+      commandLine: git push
 events:
   preStop:
-    - commit-last-changes
+    - git-add-changes
+    - git-commit-changes
+    - git-push-changes
+
